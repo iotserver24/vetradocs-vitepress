@@ -2,7 +2,7 @@
 
 AI-powered documentation chat for VitePress. Built by **iotserver24**.
 
-[![npm version](https://img.shields.io/npm/v/vetradocs-vitepress.svg)](https://www.npmjs.com/package/vetradocs-vitepress)
+[![npm version](https://img.shields.io/npm/v/vetradocs-vitepress.svg?label=version&message=1.0.4)](https://www.npmjs.com/package/vetradocs-vitepress)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Features

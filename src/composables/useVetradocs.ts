@@ -2,39 +2,51 @@
  * Vetradocs Composable for Vue 3
  * 
  * Provides reactive state and methods for the AI chat.
+ * Uses singleton pattern to share state across components.
  */
 
 import { ref, onMounted, onUnmounted } from 'vue';
-import { restore } from '@orama/plugin-data-persistence';
-import { search } from '@orama/orama';
 import type { VetradocsConfig, VetradocsMessage, SearchResult } from '../types';
 
+// Singleton state - shared across all component instances
+const isOpen = ref(false);
+const isFocused = ref(false);
+const input = ref('');
+const messages = ref<VetradocsMessage[]>([]);
+const loading = ref(false);
+const error = ref<string | null>(null);
+
+// Orama database instance (singleton)
+let oramaDB: any = null;
+let indexLoaded = false;
+let configuredPaths = {
+    indexPath: '/search-index.json',
+    apiEndpoint: '/api/chat',
+    shortcut: 'i',
+};
+
 export function useVetradocs(config: VetradocsConfig = {}) {
-    const isOpen = ref(false);
-    const isFocused = ref(false);
-    const input = ref('');
-    const messages = ref<VetradocsMessage[]>([]);
-    const loading = ref(false);
-    const error = ref<string | null>(null);
+    // Update config if provided
+    if (config.indexPath) configuredPaths.indexPath = config.indexPath;
+    if (config.apiEndpoint) configuredPaths.apiEndpoint = config.apiEndpoint;
+    if (config.shortcut) configuredPaths.shortcut = config.shortcut;
 
-    // Orama database instance
-    let oramaDB: any = null;
-
-    // Default config values
-    const indexPath = config.indexPath || '/search-index.json';
-    const apiEndpoint = config.apiEndpoint || '/api/chat';
-    const shortcut = config.shortcut || 'i';
-
-    // Load the Orama index
+    // Load the Orama index - using dynamic import to avoid SSR issues
     async function loadIndex() {
+        if (indexLoaded) return;
+
         try {
-            const response = await fetch(indexPath);
+            const response = await fetch(configuredPaths.indexPath);
             if (!response.ok) {
                 console.warn('[Vetradocs] Search index not found. Run `npx vetradocs-build` first.');
                 return;
             }
             const data = await response.text();
+
+            // Dynamic import to avoid CommonJS/ESM issues
+            const { restore } = await import('@orama/plugin-data-persistence');
             oramaDB = await restore('json', data);
+            indexLoaded = true;
             console.log('[Vetradocs] Search index loaded successfully.');
         } catch (err) {
             console.error('[Vetradocs] Failed to load search index:', err);
@@ -46,6 +58,8 @@ export function useVetradocs(config: VetradocsConfig = {}) {
         if (!oramaDB) return [];
 
         try {
+            // Dynamic import to avoid CommonJS/ESM issues
+            const { search } = await import('@orama/orama');
             const result = await search(oramaDB, { term: query, limit });
             return result.hits.map((hit: any) => ({
                 title: hit.document.title,
@@ -76,7 +90,7 @@ export function useVetradocs(config: VetradocsConfig = {}) {
                 .join('\n---\n');
 
             // Send to API
-            const response = await fetch(apiEndpoint, {
+            const response = await fetch(configuredPaths.apiEndpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -144,7 +158,7 @@ export function useVetradocs(config: VetradocsConfig = {}) {
 
     // Keyboard shortcut handler
     function handleKeydown(e: KeyboardEvent) {
-        if ((e.ctrlKey || e.metaKey) && e.key === shortcut) {
+        if ((e.ctrlKey || e.metaKey) && e.key === configuredPaths.shortcut) {
             e.preventDefault();
             toggleChat();
         }
@@ -153,18 +167,23 @@ export function useVetradocs(config: VetradocsConfig = {}) {
         }
     }
 
-    // Lifecycle hooks
+    // Lifecycle hooks - only run once
+    let keydownHandlerAdded = false;
+
     onMounted(() => {
         loadIndex();
-        window.addEventListener('keydown', handleKeydown);
+        if (!keydownHandlerAdded) {
+            window.addEventListener('keydown', handleKeydown);
+            keydownHandlerAdded = true;
+        }
     });
 
     onUnmounted(() => {
-        window.removeEventListener('keydown', handleKeydown);
+        // Don't remove the handler - other components might still use it
     });
 
     return {
-        // State
+        // State (shared singleton refs)
         isOpen,
         isFocused,
         input,

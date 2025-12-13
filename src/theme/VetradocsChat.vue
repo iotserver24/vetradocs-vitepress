@@ -5,7 +5,7 @@
  * A sliding sidebar panel with the AI chat interface.
  */
 
-import { useVetradocs } from '../composables/useVetradocs';
+import { useVetradocs } from 'vetradocs-vitepress';
 import { computed, ref, watch, nextTick } from 'vue';
 
 const props = defineProps<{
@@ -148,6 +148,10 @@ function adjustTextareaHeight(e: Event) {
               </svg>
             </button>
           </div>
+        </div>
+
+        <div class="vetradocs-branding">
+          Powered by <a href="https://vectra-docs.vercel.app" target="_blank" rel="noopener noreferrer">Vetradocs</a>
         </div>
       </div>
     </Transition>
@@ -365,6 +369,23 @@ function adjustTextareaHeight(e: Event) {
 .vetradocs-send-btn svg {
   width: 18px;
   height: 18px;
+}
+
+.vetradocs-branding {
+  font-size: 11px;
+  color: var(--vp-c-text-2, #888);
+  text-align: center;
+  padding: 8px;
+  border-top: 1px solid var(--vp-c-divider, #2e2e2e);
+}
+
+.vetradocs-branding a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.vetradocs-branding a:hover {
+  color: v-bind(accentColor);
 }
 
 /* Transitions */

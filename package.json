@@ -1,6 +1,6 @@
 {
     "name": "vetradocs-vitepress",
-    "version": "1.0.0",
+    "version": "1.0.4",
     "description": "AI-powered documentation chat plugin for VitePress. Context-aware assistant that knows your docs.",
     "author": "iotserver24",
     "license": "MIT",

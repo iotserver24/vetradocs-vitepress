@@ -5,7 +5,7 @@
  * A sleek floating input bar at the bottom of the page.
  */
 
-import { useVetradocs } from '../composables/useVetradocs';
+import { useVetradocs } from 'vetradocs-vitepress';
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
