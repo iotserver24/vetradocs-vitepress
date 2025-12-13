@@ -1,0 +1,69 @@
+{
+    "name": "vetradocs-vitepress",
+    "version": "1.0.0",
+    "description": "AI-powered documentation chat plugin for VitePress. Context-aware assistant that knows your docs.",
+    "author": "iotserver24",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/iotserver24/vetradocs-vitepress"
+    },
+    "keywords": [
+        "vitepress",
+        "plugin",
+        "ai",
+        "chat",
+        "documentation",
+        "rag",
+        "langchain",
+        "orama"
+    ],
+    "type": "module",
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        },
+        "./theme": {
+            "types": "./src/theme/index.d.ts",
+            "import": "./src/theme/index.js"
+        },
+        "./theme/*": {
+            "import": "./src/theme/*"
+        },
+        "./composables": {
+            "types": "./dist/composables/useVetradocs.d.ts",
+            "import": "./dist/composables/useVetradocs.js"
+        }
+    },
+    "files": [
+        "dist",
+        "src/theme",
+        "bin"
+    ],
+    "bin": {
+        "vetradocs-build": "./bin/build-index.mjs"
+    },
+    "scripts": {
+        "build": "tsc -p tsconfig.build.json",
+        "dev": "tsc -p tsconfig.build.json --watch",
+        "prepublishOnly": "npm run build"
+    },
+    "peerDependencies": {
+        "vitepress": ">=1.0.0",
+        "vue": ">=3.3.0"
+    },
+    "dependencies": {
+        "@orama/orama": "^3.1.16",
+        "@orama/plugin-data-persistence": "^3.1.16"
+    },
+    "devDependencies": {
+        "@types/node": "^22.10.2",
+        "typescript": "^5.9.3",
+        "vue": "^3.5.13",
+        "vitepress": "^1.6.3"
+    }
+}

@@ -1,0 +1,35 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "declaration": true,
+        "declarationMap": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "lib": [
+            "ES2022",
+            "DOM"
+        ],
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ]
+        }
+    },
+    "include": [
+        "src/index.ts",
+        "src/types.ts",
+        "src/plugin.ts",
+        "src/composables/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist",
+        "src/theme"
+    ]
+}
