@@ -50,6 +50,11 @@ export interface VetradocsConfig {
      * @default true
      */
     enabled?: boolean;
+
+    /**
+     * API Key for the backend
+     */
+    apiKey?: string;
 }
 
 export interface VetradocsMessage {

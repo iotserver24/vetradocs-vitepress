@@ -21,8 +21,9 @@ let oramaDB: any = null;
 let indexLoaded = false;
 let configuredPaths = {
     indexPath: '/search-index.json',
-    apiEndpoint: '/api/chat',
+    apiEndpoint: (import.meta.env && import.meta.env.VITE_VETRADOCS_BACKEND_URL) ? import.meta.env.VITE_VETRADOCS_BACKEND_URL : '/api/chat',
     shortcut: 'i',
+    apiKey: (import.meta.env && import.meta.env.VITE_VETRADOCS_API_KEY) ? import.meta.env.VITE_VETRADOCS_API_KEY : '',
 };
 
 export function useVetradocs(config: VetradocsConfig = {}) {
@@ -30,6 +31,7 @@ export function useVetradocs(config: VetradocsConfig = {}) {
     if (config.indexPath) configuredPaths.indexPath = config.indexPath;
     if (config.apiEndpoint) configuredPaths.apiEndpoint = config.apiEndpoint;
     if (config.shortcut) configuredPaths.shortcut = config.shortcut;
+    if (config.apiKey) configuredPaths.apiKey = config.apiKey;
 
     // Load the Orama index - using dynamic import to avoid SSR issues
     async function loadIndex() {
@@ -90,9 +92,14 @@ export function useVetradocs(config: VetradocsConfig = {}) {
                 .join('\n---\n');
 
             // Send to API
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+            if (configuredPaths.apiKey) {
+                headers['Authorization'] = `Bearer ${configuredPaths.apiKey}`;
+            }
+
             const response = await fetch(configuredPaths.apiEndpoint, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers,
                 body: JSON.stringify({
                     messages: messages.value,
                     context: contextText,
